@@ -63,12 +63,10 @@ function loadPhotos() {
   lastNumbers.push(numbers[0]);
   lastNumbers.push(numbers[1]);
   lastNumbers.push(numbers[2]);
-
-  console.log(lastNumbers);
 }
 
 function whenDoneAskingQuestions() {
-  if(Image.numQuestionsAnswered > 25) {
+  if(Image.numQuestionsAnswered === 25) {
     var a = 0;
     for(var i = 0; i < Image.allNames.length; i++) {
       a = document.createElement('li');
@@ -79,6 +77,8 @@ function whenDoneAskingQuestions() {
     for(var i = 0; i < Image.names.length; i++) {
       Image.names[i].removeEventListener('click', randomImage);
     }
+
+    document.getElementById('images').hidden = true;
     return;
   }
 }
@@ -87,18 +87,18 @@ function whenDoneAskingQuestions() {
 // event handler
 function randomImage(e) {
 
-  // add to the number questions answered
-  Image.numQuestionsAnswered++;
-
-  // when 25 clicks are reached
-  whenDoneAskingQuestions();
-
   // add to the array of which image is clicked
   for(var i = 0; i < Image.all.length; i++) {
     if(Image.all[i].name === e.target.alt) {
       Image.all[i].timesClicked++;
     }
   }
+
+  // add to the number questions answered
+  Image.numQuestionsAnswered++;
+
+  // when 25 clicks are reached
+  whenDoneAskingQuestions();
 
   // load three photos
   loadPhotos();
