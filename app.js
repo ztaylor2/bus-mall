@@ -11,16 +11,14 @@ function Image(name) {
 Image.prototype.randomIndex = function() {
   var randomIndex = Math.floor(Math.random() * Image.all.length);
   return randomIndex;
-}
+};
 
-Image.imgClicks = [];
 Image.numQuestionsAnswered = 0;
 Image.names = [document.getElementById('imgOne'), document.getElementById('imgTwo'), document.getElementById('imgThree')];
 
 Image.imgOneEl = document.getElementById('imgOne');
 Image.imgTwoEl = document.getElementById('imgTwo');
 Image.imgThreeEl = document.getElementById('imgThree');
-Image.main = document.getElementById('main');
 Image.finalList = document.getElementById('finalList');
 
 Image.all = [];
@@ -37,31 +35,42 @@ for(var i = 0; i < Image.allNames.length; i++) {
 
 function randomImage(e) {
 
-
   // add to the number questions answered
   Image.numQuestionsAnswered++;
 
   // when 25 clicks are reached
-  if(Image.numQuestionsAnswered === 26) {
+  whenDoneAskingQuestions();
+
+  // add to the array of which image is clicked
+  for(var i = 0; i < Image.all.length; i++) {
+    if(Image.all[i].name === e.target.alt) {
+      Image.all[i].timesClicked++;
+    }
+  }
+
+  // load three photos
+  loadPhotos();
+}
+
+
+
+function whenDoneAskingQuestions() {
+  if(Image.numQuestionsAnswered > 25) {
     var a = 0;
     for(var i = 0; i < Image.allNames.length; i++) {
       a = document.createElement('li');
       a.textContent = Image.all[i].name + ' Clicked: ' + Image.all[i].timesClicked + ' Shown: ' + Image.all[i].timesShown;
       Image.finalList.appendChild(a);
     }
+    // remove event listener
+    for(var i = 0; i < Image.names.length; i++) {
+      Image.names[i].removeEventListener('click', randomImage);
+    }
     return;
   }
+}
 
-
-  // add to the array of which image is clicked
-  for(var i = 0; i < Image.all.length; i++) {
-    if(Image.all[i].name === e.target.alt) {
-      Image.all[i].timesClicked++;
-      console.log('value added');
-    }
-  }
-
-  // load three photos
+function loadPhotos() {
   for(var i = 0; i < Image.names.length; i++) {
     var randomIndex = Image.prototype.randomIndex();
     if (Image.all[randomIndex].name !== Image.names[0].alt && Image.all[randomIndex].name !== Image.names[1].alt) {
@@ -72,10 +81,7 @@ function randomImage(e) {
       i--;
     }
   }
-
 }
-
-
 
 
 // event listeners
@@ -87,17 +93,4 @@ for(var i = 0; i < Image.names.length; i++) {
 
 
 // initial function
-function init() {
-  for(var i = 0; i < Image.names.length; i++) {
-    var randomIndex = Image.prototype.randomIndex();
-    if (Image.all[randomIndex].name !== Image.names[0].alt && Image.all[randomIndex].name !== Image.names[1].alt) {
-      Image.names[i].src = Image.all[randomIndex].source;
-      Image.names[i].alt = Image.all[randomIndex].name;
-      Image.all[randomIndex].timesShown += 1;
-    } else {
-      i--;
-    }
-  }
-}
-
-init();
+loadPhotos();
