@@ -11,6 +11,7 @@ function Image(name) {
 
 Image.numQuestionsAnswered = 0;
 Image.names = [document.getElementById('imgOne'), document.getElementById('imgTwo'), document.getElementById('imgThree')];
+Image.section = document.getElementById('images');
 
 Image.finalList = document.getElementById('finalList');
 
@@ -66,7 +67,7 @@ function loadPhotos() {
 }
 
 function whenDoneAskingQuestions() {
-  if(Image.numQuestionsAnswered === 25) {
+  if(Image.numQuestionsAnswered === 3) {
     var a = 0;
     for(var i = 0; i < Image.allNames.length; i++) {
       a = document.createElement('li');
@@ -86,6 +87,12 @@ function whenDoneAskingQuestions() {
 
 // event handler
 function randomImage(e) {
+
+
+  if(e.target.alt !== Image.names[0].alt && e.target.alt !== Image.names[1].alt && e.target.alt !== Image.names[2].alt) {
+    alert('Please click on an image.');
+    return;
+  }
 
   // add to the array of which image is clicked
   for(var i = 0; i < Image.all.length; i++) {
@@ -107,9 +114,8 @@ function randomImage(e) {
 
 
 // deploy event listeners
-for(var i = 0; i < Image.names.length; i++) {
-  Image.names[i].addEventListener('click', randomImage);
-}
+Image.section.addEventListener('click', randomImage);
+
 
 
 // load photos on page load
