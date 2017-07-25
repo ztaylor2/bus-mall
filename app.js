@@ -16,9 +16,6 @@ Image.prototype.randomIndex = function() {
 Image.numQuestionsAnswered = 0;
 Image.names = [document.getElementById('imgOne'), document.getElementById('imgTwo'), document.getElementById('imgThree')];
 
-Image.imgOneEl = document.getElementById('imgOne');
-Image.imgTwoEl = document.getElementById('imgTwo');
-Image.imgThreeEl = document.getElementById('imgThree');
 Image.finalList = document.getElementById('finalList');
 
 Image.all = [];
@@ -31,8 +28,37 @@ for(var i = 0; i < Image.allNames.length; i++) {
 
 
 
-// event handler
+// functions
+function loadPhotos() {
+  for(var i = 0; i < Image.names.length; i++) {
+    var randomIndex = Image.prototype.randomIndex();
+    if (Image.all[randomIndex].name !== Image.names[0].alt && Image.all[randomIndex].name !== Image.names[1].alt) {
+      Image.names[i].src = Image.all[randomIndex].source;
+      Image.names[i].alt = Image.all[randomIndex].name;
+      Image.all[randomIndex].timesShown += 1;
+    } else {
+      i--;
+    }
+  }
+}
+function whenDoneAskingQuestions() {
+  if(Image.numQuestionsAnswered > 25) {
+    var a = 0;
+    for(var i = 0; i < Image.allNames.length; i++) {
+      a = document.createElement('li');
+      a.textContent = Image.all[i].name + ' Clicked: ' + Image.all[i].timesClicked + ' Shown: ' + Image.all[i].timesShown;
+      Image.finalList.appendChild(a);
+    }
+    // remove event listener
+    for(var i = 0; i < Image.names.length; i++) {
+      Image.names[i].removeEventListener('click', randomImage);
+    }
+    return;
+  }
+}
 
+
+// event handler
 function randomImage(e) {
 
   // add to the number questions answered
@@ -54,43 +80,11 @@ function randomImage(e) {
 
 
 
-function whenDoneAskingQuestions() {
-  if(Image.numQuestionsAnswered > 25) {
-    var a = 0;
-    for(var i = 0; i < Image.allNames.length; i++) {
-      a = document.createElement('li');
-      a.textContent = Image.all[i].name + ' Clicked: ' + Image.all[i].timesClicked + ' Shown: ' + Image.all[i].timesShown;
-      Image.finalList.appendChild(a);
-    }
-    // remove event listener
-    for(var i = 0; i < Image.names.length; i++) {
-      Image.names[i].removeEventListener('click', randomImage);
-    }
-    return;
-  }
-}
-
-function loadPhotos() {
-  for(var i = 0; i < Image.names.length; i++) {
-    var randomIndex = Image.prototype.randomIndex();
-    if (Image.all[randomIndex].name !== Image.names[0].alt && Image.all[randomIndex].name !== Image.names[1].alt) {
-      Image.names[i].src = Image.all[randomIndex].source;
-      Image.names[i].alt = Image.all[randomIndex].name;
-      Image.all[randomIndex].timesShown += 1;
-    } else {
-      i--;
-    }
-  }
-}
-
-
-// event listeners
+// deploy event listeners
 for(var i = 0; i < Image.names.length; i++) {
   Image.names[i].addEventListener('click', randomImage);
 }
 
 
-
-
-// initial function
+// load photos on page load
 loadPhotos();
