@@ -7,9 +7,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
   </head>
   <body>
-    <h1>Survey</h1>
-    <p>Click the image of the product that you want to buy most out of the three shown below. </p>
+    <h1>Bus Mall Survey</h1>
     <main id="main">
+    <p id="explanation">Click on the product you want to buy the most. </p>
 
       <section id="images">
         <img id="imgOne" />
@@ -17,9 +17,10 @@
         <img id="imgThree" />
       </section>
 
-      <ul id="finalList"></ul>
+      <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+          <canvas id="myChart" width="800" height="400"></canvas>
+      </div>
 
-      <canvas id="myChart" width="200" height="200"></canvas>
 
     </main>
   <script src="app.js" type="text/javascript"></script>
