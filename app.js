@@ -8,28 +8,32 @@ function Image(name) {
   Image.all.push(this);
 }
 
-
 Image.numQuestionsAnswered = 0;
 Image.names = [document.getElementById('imgOne'), document.getElementById('imgTwo'), document.getElementById('imgThree')];
 Image.section = document.getElementById('images');
-
-Image.finalList = document.getElementById('finalList');
-
 Image.all = [];
-
 Image.allNames = ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'];
 
-for(var i = 0; i < Image.allNames.length; i++) {
-  new Image(Image.allNames[i]);
+
+ // load local storage if it exists
+if(window.localStorage.length !== 0) {
+  // load data and asign data
+  Image.all = JSON.parse(localStorage.test);
+  console.log(Image.all, 'local storage exists');
+} else {
+  for(var i = 0; i < Image.allNames.length; i++) {
+    new Image(Image.allNames[i]);
+  }
 }
+
 
 function randomIndex() {
   return Math.floor(Math.random() * Image.all.length);
 }
 
+// functions
 var lastNumbers = [];
 
-// functions
 function loadPhotos() {
 
   var numbers = [];
@@ -41,29 +45,20 @@ function loadPhotos() {
     numbers[0] = randomIndex();
   }
 
-  Image.names[0].src = Image.all[numbers[0]].source;
-  Image.names[0].alt = Image.all[numbers[0]].name;
-  Image.all[numbers[0]].timesShown += 1;
-
   while (numbers[0] === numbers[1] || numbers[1] === lastNumbers[lastNumbers.length - 1] || numbers[1] === lastNumbers[lastNumbers.length - 2] || numbers[1] === lastNumbers[lastNumbers.length - 3]) {
     numbers[1] = randomIndex();
   }
-
-  Image.names[1].src = Image.all[numbers[1]].source;
-  Image.names[1].alt = Image.all[numbers[1]].name;
-  Image.all[numbers[1]].timesShown += 1;
 
   while (numbers[0] === numbers[2] || numbers[1] === numbers[2] || numbers[2] === lastNumbers[lastNumbers.length - 1] || numbers[2] === lastNumbers[lastNumbers.length - 2] || numbers[2] === lastNumbers[lastNumbers.length - 3]) {
     numbers[2] = randomIndex();
   }
 
-  Image.names[2].src = Image.all[numbers[2]].source;
-  Image.names[2].alt = Image.all[numbers[2]].name;
-  Image.all[numbers[2]].timesShown += 1;
-
-  lastNumbers.push(numbers[0]);
-  lastNumbers.push(numbers[1]);
-  lastNumbers.push(numbers[2]);
+  for(var i = 0; i < Image.names.length; i++) {
+    Image.names[i].src = Image.all[numbers[i]].source;
+    Image.names[i].alt = Image.all[numbers[i]].name;
+    Image.all[numbers[i]].timesShown += 1;
+    lastNumbers.push(numbers[i]);
+  }
 }
 
 function whenDoneAskingQuestions() {
@@ -82,11 +77,11 @@ function whenDoneAskingQuestions() {
 }
 
 
+
 // event handler
 function randomImage(e) {
 
-
-  if(e.target.alt !== Image.names[0].alt && e.target.alt !== Image.names[1].alt && e.target.alt !== Image.names[2].alt) {
+  if(e.target.id === 'images') {
     alert('Please click on an image.');
     return;
   }
@@ -95,6 +90,10 @@ function randomImage(e) {
   for(var i = 0; i < Image.all.length; i++) {
     if(Image.all[i].name === e.target.alt) {
       Image.all[i].timesClicked++;
+
+      // add a click to the image that is clicked into local storage
+      // +++++++++++++++++++++++++++++++++++++++++++++++++++
+      localStorage.test = JSON.stringify(Image.all);
     }
   }
 
@@ -119,8 +118,6 @@ Image.section.addEventListener('click', randomImage);
 loadPhotos();
 
 // chart stuff
-
-
 var labels = [];
 
 for(var i = 0; i < Image.all.length; i++) {
@@ -134,69 +131,72 @@ function buildChart() {
     data.push(Image.all[i].timesClicked);
   }
 
-  var ctx = document.getElementById("myChart");
+  var ctx = document.getElementById('myChart');
   var myChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-          labels: labels,
-          datasets: [{
-              label: 'Vote Totals',
-              data: data,
-              backgroundColor: [
-                  'rgba(255, 99, 132, 0.2)',
-                  'rgba(54, 162, 235, 0.2)',
-                  'rgba(255, 206, 86, 0.2)',
-                  'rgba(75, 192, 192, 0.2)',
-                  'rgba(153, 102, 255, 0.2)',
-                  'rgba(255, 159, 64, 0.2)',
-                  'rgba(255, 99, 132, 0.2)',
-                  'rgba(54, 162, 235, 0.2)',
-                  'rgba(255, 206, 86, 0.2)',
-                  'rgba(75, 192, 192, 0.2)',
-                  'rgba(153, 102, 255, 0.2)',
-                  'rgba(255, 159, 64, 0.2)',
-                  'rgba(255, 99, 132, 0.2)',
-                  'rgba(54, 162, 235, 0.2)',
-                  'rgba(255, 206, 86, 0.2)',
-                  'rgba(75, 192, 192, 0.2)',
-                  'rgba(153, 102, 255, 0.2)',
-                  'rgba(255, 159, 64, 0.2)',
-                  'rgba(255, 99, 132, 0.2)',
-                  'rgba(54, 162, 235, 0.2)'
-              ],
-              borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)'
-              ],
-              borderWidth: 1
-          }]
-      },
-      options: {
-          scales: {
-              yAxes: [{
-                  ticks: {
-                      beginAtZero:true
-                  }
-              }]
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Vote Totals',
+        data: data,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            max: 10,
+            min: 0,
+            stepsize: 1.0,
+            beginAtZero:true
           }
+        }]
       }
+    }
   });
 }
