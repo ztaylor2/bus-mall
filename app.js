@@ -8,13 +8,10 @@ function Image(name) {
   Image.all.push(this);
 }
 
-Image.prototype.randomIndex = function() {
-  var randomIndex = Math.floor(Math.random() * Image.all.length);
-  return randomIndex;
-};
 
 Image.numQuestionsAnswered = 0;
 Image.names = [document.getElementById('imgOne'), document.getElementById('imgTwo'), document.getElementById('imgThree')];
+Image.section = document.getElementById('images');
 
 Image.finalList = document.getElementById('finalList');
 
@@ -26,33 +23,60 @@ for(var i = 0; i < Image.allNames.length; i++) {
   new Image(Image.allNames[i]);
 }
 
+function randomIndex() {
+  return Math.floor(Math.random() * Image.all.length);
+}
 
+var lastNumbers = [];
 
 // functions
 function loadPhotos() {
-  for(var i = 0; i < Image.names.length; i++) {
-    var randomIndex = Image.prototype.randomIndex();
-    if (Image.all[randomIndex].name !== Image.names[0].alt && Image.all[randomIndex].name !== Image.names[1].alt) {
-      Image.names[i].src = Image.all[randomIndex].source;
-      Image.names[i].alt = Image.all[randomIndex].name;
-      Image.all[randomIndex].timesShown += 1;
-    } else {
-      i--;
-    }
+
+  var numbers = [];
+  numbers[0] = randomIndex();
+  numbers[1] = randomIndex();
+  numbers[2] = randomIndex();
+
+  while (numbers[0] === lastNumbers[lastNumbers.length - 1] || numbers[0] === lastNumbers[lastNumbers.length - 2] || numbers[0] === lastNumbers[lastNumbers.length - 3]) {
+    numbers[0] = randomIndex();
   }
+
+  Image.names[0].src = Image.all[numbers[0]].source;
+  Image.names[0].alt = Image.all[numbers[0]].name;
+  Image.all[numbers[0]].timesShown += 1;
+
+  while (numbers[0] === numbers[1] || numbers[1] === lastNumbers[lastNumbers.length - 1] || numbers[1] === lastNumbers[lastNumbers.length - 2] || numbers[1] === lastNumbers[lastNumbers.length - 3]) {
+    numbers[1] = randomIndex();
+  }
+
+  Image.names[1].src = Image.all[numbers[1]].source;
+  Image.names[1].alt = Image.all[numbers[1]].name;
+  Image.all[numbers[1]].timesShown += 1;
+
+  while (numbers[0] === numbers[2] || numbers[1] === numbers[2] || numbers[2] === lastNumbers[lastNumbers.length - 1] || numbers[2] === lastNumbers[lastNumbers.length - 2] || numbers[2] === lastNumbers[lastNumbers.length - 3]) {
+    numbers[2] = randomIndex();
+  }
+
+  Image.names[2].src = Image.all[numbers[2]].source;
+  Image.names[2].alt = Image.all[numbers[2]].name;
+  Image.all[numbers[2]].timesShown += 1;
+
+  lastNumbers.push(numbers[0]);
+  lastNumbers.push(numbers[1]);
+  lastNumbers.push(numbers[2]);
 }
+
 function whenDoneAskingQuestions() {
-  if(Image.numQuestionsAnswered > 25) {
-    var a = 0;
-    for(var i = 0; i < Image.allNames.length; i++) {
-      a = document.createElement('li');
-      a.textContent = Image.all[i].name + ' Clicked: ' + Image.all[i].timesClicked + ' Shown: ' + Image.all[i].timesShown;
-      Image.finalList.appendChild(a);
-    }
+  if(Image.numQuestionsAnswered === 25) {
+
     // remove event listener
     for(var i = 0; i < Image.names.length; i++) {
       Image.names[i].removeEventListener('click', randomImage);
     }
+
+    document.getElementById('explanation').textContent = 'Results:';
+    document.getElementById('images').hidden = true;
+    buildChart();
     return;
   }
 }
@@ -61,11 +85,11 @@ function whenDoneAskingQuestions() {
 // event handler
 function randomImage(e) {
 
-  // add to the number questions answered
-  Image.numQuestionsAnswered++;
 
-  // when 25 clicks are reached
-  whenDoneAskingQuestions();
+  if(e.target.alt !== Image.names[0].alt && e.target.alt !== Image.names[1].alt && e.target.alt !== Image.names[2].alt) {
+    alert('Please click on an image.');
+    return;
+  }
 
   // add to the array of which image is clicked
   for(var i = 0; i < Image.all.length; i++) {
@@ -74,6 +98,12 @@ function randomImage(e) {
     }
   }
 
+  // add to the number questions answered
+  Image.numQuestionsAnswered++;
+
+  // when 25 clicks are reached
+  whenDoneAskingQuestions();
+
   // load three photos
   loadPhotos();
 }
@@ -81,10 +111,92 @@ function randomImage(e) {
 
 
 // deploy event listeners
-for(var i = 0; i < Image.names.length; i++) {
-  Image.names[i].addEventListener('click', randomImage);
-}
+Image.section.addEventListener('click', randomImage);
+
 
 
 // load photos on page load
 loadPhotos();
+
+// chart stuff
+
+
+var labels = [];
+
+for(var i = 0; i < Image.all.length; i++) {
+  labels.push(Image.all[i].name);
+}
+
+function buildChart() {
+  var data = [];
+
+  for(var i = 0; i < Image.all.length; i++) {
+    data.push(Image.all[i].timesClicked);
+  }
+
+  var ctx = document.getElementById("myChart");
+  var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: labels,
+          datasets: [{
+              label: 'Vote Totals',
+              data: data,
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)'
+              ],
+              borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero:true
+                  }
+              }]
+          }
+      }
+  });
+}

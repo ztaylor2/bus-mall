@@ -1,3 +1,37 @@
 img {
   width: 200px;
 }
+
+h1 {
+  font-family: sans-serif;
+  font-weight: lighter;
+  text-align: center;
+}
+
+p {
+  font-family: sans-serif;
+  font-size: 20px;
+  text-align: center;
+
+}
+
+canvas{
+  margin: auto;
+}
+
+main {
+}
+
+div.chart-container {
+  margin: auto;
+}
+
+img {
+  margin: 10px;
+  border: 3px solid black;
+}
+
+section {
+  width: 700px;
+  margin: auto;
+}
